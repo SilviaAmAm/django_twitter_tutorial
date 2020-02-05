@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap3',
     'mytweets',
+    'user_profile'
 ]
 
 MIDDLEWARE = [
@@ -120,5 +121,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
+
+STATICFILES_DIRS = [
+    os.path.join(os.path.join(BASE_DIR, "django_mytweets"), "static"),
+]
 
 STATIC_URL = '/static/'
