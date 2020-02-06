@@ -17,8 +17,14 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include
 
+from mytweets.views import Profile
+from mytweets.views import Index
+from mytweets.views import HashTagCloud
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('user/', include('user_profile.urls')),
-    path('', include('mytweets.urls')),
+    path('', Index.as_view(), name='index'),
+    path('user/<username>/', Profile.as_view(), name='user-profile'),
+    path('hashtag/<hashtag>/', HashTagCloud.as_view(), name='hashtag'),
 ]

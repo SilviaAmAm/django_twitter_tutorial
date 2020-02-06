@@ -1,6 +1,8 @@
 from django.urls import path
-from . import views
+
+from user_profile.views import Profile
+from mytweets.views import Profile
 
 urlpatterns = [
-    path('<pk>', views.Profile.as_view(), name='user-profile')
+
 ]

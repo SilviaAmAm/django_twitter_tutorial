@@ -14,3 +14,15 @@ class Tweet(models.Model):
 
     def __str__(self):
         return self.text
+
+
+class HashTag(models.Model):
+    """
+    Model that defines the hashtags
+    """
+
+    name = models.CharField(max_length=64, unique=True)
+    tweet = models.ManyToManyField(Tweet)
+
+    def __str__(self):
+        return self.name
