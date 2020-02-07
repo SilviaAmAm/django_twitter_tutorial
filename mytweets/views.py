@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.generic import View
 from django.urls import reverse
-from django.template import RequestContext
+from django.http import JsonResponse
 import json
 
 from mytweets.forms import TweetForm
@@ -102,17 +102,26 @@ class Search(View):
         form = SearchForm()
         params = dict()
         params['search'] = form
-        return render(request, 'search.html', params)
 
-    def post(self, request):
-        form = SearchForm(request.POST)
-
-        if form.is_valid():
-            query = form.cleaned_data['query']
+        if request.is_ajax():
+            query = request.GET.get("query")
             tweets = Tweet.objects.filter(text__icontains=query)
-            context = {'query': query, 'tweets': tweets}
-            return_str = render_to_string('partials/_tweet_search.html', context)
-
-            return HttpResponse(json.dumps(return_str), content_type="application/json")
+            context = {'tweets': tweets}
+            html = render_to_string('partials/_tweet_search.html', context=context)
+            data = {"search_results_html": html}
+            return JsonResponse(data=data, safe=False)
         else:
-            HttpResponseRedirect(reverse('search'))
+            return render(request, 'search.html', params)
+
+    # def post(self, request):
+    #     form = SearchForm(request.POST)
+    #
+    #     if form.is_valid():
+    #         query = form.cleaned_data['query']
+    #         tweets = Tweet.objects.filter(text__icontains=query)
+    #         context = {'query': query, 'tweets': tweets}
+    #         return_str = render_to_string('partials/_tweet_search.html', context)
+    #
+    #         return HttpResponse(json.dumps(return_str), content_type="application/json")
+    #     else:
+    #         HttpResponseRedirect(reverse('search'))
