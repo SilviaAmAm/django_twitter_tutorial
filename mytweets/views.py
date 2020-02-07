@@ -1,10 +1,14 @@
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.generic import View
 from django.urls import reverse
+from django.template import RequestContext
+import json
 
 from mytweets.forms import TweetForm
+from mytweets.forms import SearchForm
 from mytweets.models import Tweet
 from mytweets.models import HashTag
 from user_profile.models import User
@@ -87,3 +91,28 @@ class HashTagCloud(View):
         params['tweets'] = hashtag.tweet
 
         return render(request, 'hashtag.html', params)
+
+
+class Search(View):
+    """
+    Search all the tweets with query
+    """
+
+    def get(self, request):
+        form = SearchForm()
+        params = dict()
+        params['search'] = form
+        return render(request, 'search.html', params)
+
+    def post(self, request):
+        form = SearchForm(request.POST)
+
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            tweets = Tweet.objects.filter(text__icontains=query)
+            context = {'query': query, 'tweets': tweets}
+            return_str = render_to_string('partials/_tweet_search.html', context)
+
+            return HttpResponse(json.dumps(return_str), content_type="application/json")
+        else:
+            HttpResponseRedirect(reverse('search'))

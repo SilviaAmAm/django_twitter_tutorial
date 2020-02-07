@@ -20,6 +20,7 @@ from django.urls import include
 from mytweets.views import Profile
 from mytweets.views import Index
 from mytweets.views import HashTagCloud
+from mytweets.views import Search
 
 
 urlpatterns = [
@@ -27,4 +28,5 @@ urlpatterns = [
     path('', Index.as_view(), name='index'),
     path('user/<username>/', Profile.as_view(), name='user-profile'),
     path('hashtag/<hashtag>/', HashTagCloud.as_view(), name='hashtag'),
+    path('search/', Search.as_view(), name='search')
 ]
