@@ -44,11 +44,11 @@ class Profile(View):
 
     def get(self, request, username):
         params = {}
-        user = User.objects.get(username=username)
-        tweets = Tweet.objects.filter(user=user)
-        form = self.form_class(initial={'country':'Netherlands'})
+        viewed_user = User.objects.get(username=username)
+        tweets = Tweet.objects.filter(user=viewed_user)
+        form = self.form_class(initial={'country': 'Netherlands'})
 
-        params['user'] = user
+        params['viewed_user'] = viewed_user
         params['tweets'] = tweets
         params['form'] = form
 
