@@ -6,6 +6,8 @@ class Tweet(models.Model):
     """
     Tweet model
     """
+
+    id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.CharField(max_length=160)
     created_date = models.DateTimeField(auto_now_add=True)

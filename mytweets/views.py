@@ -3,6 +3,7 @@ from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.views.generic import View
+from django.views.generic import DetailView
 from django.urls import reverse
 from django.http import JsonResponse
 import json
@@ -80,6 +81,43 @@ class Profile(View):
         return render(request, self.template_name, {'form': form})
 
 
+class TweetDetails(View):
+
+    form_class = TweetForm
+    template_name = 'tweet_detail.html'
+
+    def get(self, request, username, pk):
+
+        try:
+            user = User.objects.get(username=username)
+            tweet = Tweet.objects.get(user=user, id=pk)
+        except Tweet.DoesNotExist:
+            return render(request, self.template_name)
+
+        form = self.form_class(initial={'country': tweet.country, 'text': tweet.text})
+        context = {'form': form}
+
+        return render(request, self.template_name, context=context)
+
+    def post(self, request, username, pk):
+
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+
+            new_text = form.cleaned_data['text']
+            user = User.objects.get(username=username)
+            tweet = Tweet.objects.get(user=user, id=pk)
+            tweet.text = new_text
+            tweet.save()
+
+            return HttpResponseRedirect(reverse('user-profile', args=[str(user.username)]))
+
+        context = {'form': form}
+
+        render(request, self.template_name, context=context)
+
+
 class HashTagCloud(View):
     """
     Page that shows all the available hashtags
@@ -125,3 +163,8 @@ class Search(View):
     #         return HttpResponse(json.dumps(return_str), content_type="application/json")
     #     else:
     #         HttpResponseRedirect(reverse('search'))
+
+
+
+
+
