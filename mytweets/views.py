@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect
 from django.views.generic import View
 from django.views.generic import DetailView
 from django.urls import reverse
+from django.template.context_processors import csrf
 from django.http import JsonResponse
 import json
 
@@ -43,8 +44,20 @@ class Profile(View):
     template_name = 'profile.html'
 
     def get(self, request, username):
+
         params = {}
         viewed_user = User.objects.get(username=username)
+
+        if request.is_ajax():
+            tweet_id = request.GET.get("id")
+            tweet = Tweet.objects.get(user=viewed_user, pk=int(tweet_id))
+            form = self.form_class(initial={'country': 'Netherlands', 'text': tweet.text})
+            csrf_object = csrf(request)
+            context = {'form': form, 'csrf_token': csrf_object['csrf_token'], 'tweet_id': tweet_id}
+            html = render_to_string('partials/_tweet_edit_form.html', context=context)
+            data = {"edit_form_html": html, 'tweet_id': tweet_id}
+            return JsonResponse(data=data, safe=False)
+
         tweets = Tweet.objects.filter(user=viewed_user)
         form = self.form_class(initial={'country': 'Netherlands'})
 
@@ -87,7 +100,6 @@ class TweetDetails(View):
     template_name = 'tweet_detail.html'
 
     def get(self, request, username, pk):
-
         try:
             user = User.objects.get(username=username)
             tweet = Tweet.objects.get(user=user, id=pk)
@@ -110,6 +122,12 @@ class TweetDetails(View):
             tweet = Tweet.objects.get(user=user, id=pk)
             tweet.text = new_text
             tweet.save()
+
+            if request.is_ajax():
+                context = {'tweet': tweet, 'user': user}
+                html = render_to_string('partials/_tweet.html', context=context)
+                data = {"tweet_html": html, "tweet_id": tweet.id}
+                return JsonResponse(data=data, safe=False)
 
             return HttpResponseRedirect(reverse('user-profile', args=[str(user.username)]))
 

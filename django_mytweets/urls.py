@@ -21,12 +21,15 @@ from mytweets.views import Profile
 from mytweets.views import Index
 from mytweets.views import HashTagCloud
 from mytweets.views import Search
+from mytweets.views import TweetDetails
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('', Index.as_view(), name='index'),
     path('user/<username>/', Profile.as_view(), name='user-profile'),
+    path('user/<username>/<int:pk>/', TweetDetails.as_view(), name='tweet-detail'),
     path('hashtag/<hashtag>/', HashTagCloud.as_view(), name='hashtag'),
     path('search/', Search.as_view(), name='search')
 ]

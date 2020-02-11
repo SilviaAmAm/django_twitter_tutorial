@@ -1,0 +1,8 @@
+<div class="well" id="tweet-{{ tweet.id }}">
+    <span>{{ tweet.text }}</span>
+    {% if user.is_authenticated %}
+        {% if user.get_username == viewed_user.username %}
+            <a href="{% url 'tweet-detail' tweet.user.username tweet.id %}" class="edit">Edit</a>
+        {% endif %}
+    {% endif %}
+</div>

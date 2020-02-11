@@ -1,0 +1,12 @@
+<form id="edit-form" method="post">
+    {% csrf_token %}
+    <div class="col-md-8 col-md-offset-2 fieldWrapper">
+        {{ form.text.errors }}
+        {{ form.text }}
+    </div>
+    {{ form.country.as_hidden }}
+    <div>
+        <input type="submit" value="post" id="edit-button">
+    </div>
+
+</form>
